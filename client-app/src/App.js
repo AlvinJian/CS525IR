@@ -1,28 +1,41 @@
 import React, { Component } from 'react';
+import ProductSearch from './components/ProductSearch'
 import logo from './logo.svg';
 import './App.css';
 
 class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
-  }
+    constructor(props) {
+        super(props)
+        this.state = {
+            appState: 0,
+            selctedProduct: null
+        };
+    }
+
+    changePage(pgId, data) {
+        if (pgId === 0) {
+            this.setState({
+                appState: pgId,
+                selctedProduct: null
+            });
+        } else if (pgId === 1) {
+            this.setState({
+                appState: pgId,
+                selctedProduct: data
+            });
+        }
+    }
+
+    render() {
+        if (this.state.appState === 0) {
+            // render product search page
+            return (
+                <div>
+                    <ProductSearch mgr={this}/>
+                </div>
+            );
+        }
+    }
 }
 
 export default App;
