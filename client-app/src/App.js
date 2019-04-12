@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import ProductSearch from './components/ProductSearch'
+import ProductView from './components/ProductView'
 import logo from './logo.svg';
 import './App.css';
 
@@ -13,17 +14,10 @@ class App extends Component {
     }
 
     changePage(pgId, data) {
-        if (pgId === 0) {
-            this.setState({
-                appState: pgId,
-                selctedProduct: null
-            });
-        } else if (pgId === 1) {
-            this.setState({
-                appState: pgId,
-                selctedProduct: data
-            });
-        }
+        this.setState({
+            appState: pgId,
+            selctedProduct: data
+        });
     }
 
     render() {
@@ -34,6 +28,11 @@ class App extends Component {
                     <ProductSearch mgr={this}/>
                 </div>
             );
+        } else if (this.state.appState === 1) {
+            return (
+            <div>
+                <ProductView product={this.state.selctedProduct} />
+            </div>);
         }
     }
 }

@@ -31,6 +31,7 @@ export default class ProductList extends Component {
             id: event.currentTarget.id,
             name: event.currentTarget.textContent
         };
+        console.log(product)
         this.pageManager.changePage(1, product);
     }
 
@@ -43,12 +44,10 @@ export default class ProductList extends Component {
                 (product, i) => {
                     return (<ListGroupItem
                                 id={product.id}
-                                key={i}>
-                                <Button outline color="secondary"
-                                        id={product.id} 
-                                        onClick={this.onProductSelected}>
-                                    {product.name}
-                                </Button>
+                                key={i}
+                                tag="button"
+                                onClick={this.onProductSelected}>
+                                {product.name}
                             </ListGroupItem>);
                 }
             );

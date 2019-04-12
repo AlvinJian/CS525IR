@@ -1,9 +1,12 @@
 from flask import Flask, send_from_directory, render_template, json
+from flask import current_app, g
 
 # TODO this is for test
 class MyApp:
     def __init__(self, name=''):
         self._name = name
+        print('the app is initialized')
+        self.say_name()
 
     def say_name(self):
         print('my name is {0}'.format(self._name))
@@ -12,22 +15,37 @@ class MyApp:
         return self._name
 
     def search_product(self, arg):
-        # return ['{0}-{1}'.format(arg, i+1) for i in range(10)]
         dataList = []
         for i in range(10):
             dataList.append({'id': i+1, 'name': '{0}-{1}'.format(arg, i+1)})
         return dataList
 
-myApp = MyApp("review_app")
+    def get_product_info(self, id):
+        info = dict()
+        reviews = [{'id': i, 'text': '{0} is good. [{1}]'.format(id, i)}  for i in range(5)]
+        labels = ['foo' for _ in range(10)]
+        info['top_reviews'] = reviews
+        info['labels'] = labels
+        return info
+
 runtime = Flask(__name__, static_folder='client-app/build/static', template_folder='client-app/build')
+
+def get_app_instance():
+    if "app" not in current_app.extensions.keys():
+        current_app.extensions["app"] = MyApp("review_app")
+    return current_app.extensions["app"]
 
 @runtime.route('/')
 def index():
+    get_app_instance()
     return render_template('index.html')
 
 @runtime.route('/api/searchProduct/<arg>')
 def search_product(arg):
+    myApp = get_app_instance()
     return json.jsonify(myApp.search_product(arg))
 
-if __name__ == '__main__':
-    runtime.run(use_reloader=True, port=5000, threaded=True)
+@runtime.route('/api/getProductInfo/<product_id>')
+def get_product_info(product_id):
+    myApp = get_app_instance()
+    return json.jsonify(myApp.get_product_info(product_id))
