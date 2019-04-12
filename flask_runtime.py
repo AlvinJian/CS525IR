@@ -24,7 +24,7 @@ class MyApp:
         info = dict()
         reviews = [{'id': i, 'text': '{0} is good. [{1}]'.format(id, i)}  for i in range(5)]
         labels = ['foo' for _ in range(10)]
-        info['top_reviews'] = reviews
+        info['topReviews'] = reviews
         info['labels'] = labels
         return info
 

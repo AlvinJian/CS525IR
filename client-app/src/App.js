@@ -31,7 +31,8 @@ class App extends Component {
         } else if (this.state.appState === 1) {
             return (
             <div>
-                <ProductView product={this.state.selctedProduct} />
+                <ProductView mgr={this}
+                    product={this.state.selctedProduct} />
             </div>);
         }
     }
