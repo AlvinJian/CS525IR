@@ -15,7 +15,8 @@ export default class ProductSearch extends Component {
         this.pageManager = props.mgr
     }
 
-    searchProduct(term) {
+    searchProduct(event) {
+        let term = document.getElementById(this.searchBoxId).value
         let cmd = `api/searchProduct/${term}`
         fetch(cmd)
             .then(resp => resp.json())
@@ -39,8 +40,7 @@ export default class ProductSearch extends Component {
                             placeholder="product keyword"
                             onKeyPress={(event) => {
                                 if (event.key === 'Enter') {
-                                    let elem = document.getElementById(this.searchBoxId);
-                                    this.searchProduct(elem.value);
+                                    this.searchProduct(event);
                                 }
                             }} />
                         <InputGroupAddon addonType="append">

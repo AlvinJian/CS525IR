@@ -9,9 +9,17 @@ export default class ProductReview extends Component {
             theReviews: props.reviews
         }
 
-        this.defaultReviews = props.reviews
+        // this.defaultReviews = props.reviews
+        props.dataSource.setDataView(this)
 
         this.renderReviews = this.renderReviews.bind(this)
+        this.setData = this.setData.bind(this)
+    }
+
+    setData(reviews) {
+        this.setState({
+            theReviews: reviews
+        })
     }
 
     renderReviews() {

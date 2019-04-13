@@ -17,6 +17,7 @@ export default class ProductView extends Component {
             productInfo: null
         };
 
+        this.setDataView = this.setDataView.bind(this)
         this.drawLabels = this.drawLabels.bind(this)
         this.backToProductSearch = this.backToProductSearch.bind(this)
         this.searchReview = this.searchReview.bind(this)
@@ -28,6 +29,12 @@ export default class ProductView extends Component {
                     productInfo: data
                 });
             });
+
+        this.dataView = null
+    }
+
+    setDataView(dataView) {
+        this.dataView = dataView
     }
 
     drawLabels() {
@@ -44,9 +51,16 @@ export default class ProductView extends Component {
         this.pageManager.changePage(0, null)
     }
 
-    searchReview(term) {
+    searchReview(event) {
         // TODO
+        let term = document.getElementById(this.searchBoxId).value
         console.log(term)
+        let cmd = `api/searchReview/${this.theProduct.id}/${term}`
+        fetch(cmd).then(resp => resp.json())
+            .then(data => { 
+                console.log(data)
+                this.dataView.setData(data)
+            })
     }
 
     render() {
@@ -69,14 +83,21 @@ export default class ProductView extends Component {
                                 placeholder="search review"
                                 onKeyPress={(event) => {
                                     if (event.key === 'Enter') {
-                                        let term = document.getElementById(this.searchBoxId).value
-                                        this.searchReview(term);
+                                        this.searchReview(event);
                                     }
                                 }} />
                             <InputGroupAddon addonType="append">
                                 <Button color="primary"
-                                        onClick={this.searchProduct} >
+                                        onClick={this.searchReview} >
                                     Search Review
+                                </Button>
+                                <Button color="info"
+                                        onClick={(event) => {
+                                            if (this.dataView && this.state.productInfo) {
+                                                this.dataView.setData(this.state.productInfo.topReviews)
+                                            }
+                                        }} >
+                                    Top Reviews
                                 </Button>
                             </InputGroupAddon>
                         </InputGroup>
@@ -85,7 +106,8 @@ export default class ProductView extends Component {
                 theViews.push(
                     <Row>
                         <ProductReview 
-                            reviews={this.state.productInfo.topReviews} />
+                            reviews={this.state.productInfo.topReviews}
+                            dataSource={this} />
                     </Row>
                 )
                 return theViews

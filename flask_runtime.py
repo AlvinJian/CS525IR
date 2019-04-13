@@ -28,6 +28,13 @@ class MyApp:
         info['labels'] = labels
         return info
 
+    def searchReview(self, id, term):
+        dummy = '{0} of {1} is good'.format(term, id)
+        reviews = []
+        for i in range(10):
+            reviews.append({'id': i, 'text': '{0}-[{1}]'.format(dummy, i)})
+        return reviews
+
 runtime = Flask(__name__, static_folder='client-app/build/static', template_folder='client-app/build')
 
 def get_app_instance():
@@ -49,3 +56,8 @@ def search_product(arg):
 def get_product_info(product_id):
     myApp = get_app_instance()
     return json.jsonify(myApp.get_product_info(product_id))
+
+@runtime.route('/api/searchReview/<id>/<term>')
+def search_review(id, term):
+    myApp = get_app_instance()
+    return json.jsonify(myApp.searchReview(id, term))
