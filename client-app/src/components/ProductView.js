@@ -4,6 +4,8 @@ import { Jumbotron } from 'reactstrap';
 import { Input, InputGroup, InputGroupAddon  } from 'reactstrap';
 import { Button } from 'reactstrap'
 import { Container, Row, Col } from 'reactstrap';
+import { Card, CardImg, CardTitle, CardText, CardDeck,
+    CardHeader, CardBody } from 'reactstrap';
 import ProductReview from './ProductReview'
 
 export default class ProductView extends Component {
@@ -19,6 +21,7 @@ export default class ProductView extends Component {
 
         this.setDataView = this.setDataView.bind(this)
         this.drawLabels = this.drawLabels.bind(this)
+        this.drawLabelSection = this.drawLabelSection.bind(this)
         this.backToProductSearch = this.backToProductSearch.bind(this)
         this.searchReview = this.searchReview.bind(this)
 
@@ -37,13 +40,36 @@ export default class ProductView extends Component {
         this.dataView = dataView
     }
 
-    drawLabels() {
+    drawLabels(labels, clr) {
         return (
-            this.state.productInfo.labels.map(
+            labels.map(
                 (lbl, i) => {
-                    return (<Badge color="success" key={i}>{lbl}</Badge>)
+                    return (<Badge color={clr} key={i}>{lbl}</Badge>)
                 }
             )
+        )
+    }
+
+    drawLabelSection() {
+        return (
+            <CardDeck>
+                <Card>
+                    <CardHeader>Pro</CardHeader>
+                    <CardBody>
+                        <CardText>
+                            { this.drawLabels(this.state.productInfo.labels, "success") }
+                        </CardText>
+                    </CardBody>
+                </Card>
+                <Card>
+                    <CardHeader>Con</CardHeader>
+                    <CardBody>
+                        <CardText>
+                            { this.drawLabels(this.state.productInfo.labels, "danger") }
+                        </CardText>
+                    </CardBody>
+                </Card>
+            </CardDeck>
         )
     }
 
@@ -68,7 +94,7 @@ export default class ProductView extends Component {
             if (this.state.productInfo) {
                 let theViews = []
                 theViews.push(
-                    <Row>{this.drawLabels()}</Row>
+                    <Row>{ this.drawLabelSection() }</Row>
                 )
                 theViews.push(
                     <Row>
