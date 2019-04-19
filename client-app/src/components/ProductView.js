@@ -7,6 +7,7 @@ import { Container, Row, Col } from 'reactstrap';
 import { Card, CardImg, CardTitle, CardText, CardDeck,
     CardHeader, CardBody } from 'reactstrap';
 import ProductReview from './ProductReview'
+import './ProductView.css'
 
 export default class ProductView extends Component {
     constructor(props) {
@@ -44,7 +45,11 @@ export default class ProductView extends Component {
         return (
             labels.map(
                 (lbl, i) => {
-                    return (<Badge color={clr} key={i}>{lbl}</Badge>)
+                    return (
+                        <Badge color={clr} key={i} className="label">
+                            {lbl}
+                        </Badge>
+                    )
                 }
             )
         )
@@ -52,7 +57,7 @@ export default class ProductView extends Component {
 
     drawLabelSection() {
         return (
-            <CardDeck>
+            <CardDeck className="labelDeck">
                 <Card>
                     <CardHeader>Pro</CardHeader>
                     <CardBody>
@@ -65,7 +70,9 @@ export default class ProductView extends Component {
                     <CardHeader>Con</CardHeader>
                     <CardBody>
                         <CardText>
-                            { this.drawLabels(this.state.productInfo.labels, "danger") }
+                            <div className="label">
+                                { this.drawLabels(this.state.productInfo.labels, "danger") }
+                            </div>
                         </CardText>
                     </CardBody>
                 </Card>
@@ -94,46 +101,55 @@ export default class ProductView extends Component {
             if (this.state.productInfo) {
                 let theViews = []
                 theViews.push(
-                    <Row>{ this.drawLabelSection() }</Row>
-                )
-                theViews.push(
                     <Row>
-                        <InputGroup>
-                            <InputGroupAddon addonType="prepend">
-                                <Button color="secondary"
-                                        onClick={this.backToProductSearch}>
-                                    Back to Product Search
-                                </Button>
-                            </InputGroupAddon>
-                            <Input id={this.searchBoxId} 
-                                placeholder="search review"
-                                onKeyPress={(event) => {
-                                    if (event.key === 'Enter') {
-                                        this.searchReview(event);
-                                    }
-                                }} />
-                            <InputGroupAddon addonType="append">
-                                <Button color="primary"
-                                        onClick={this.searchReview} >
-                                    Search Review
-                                </Button>
-                                <Button color="info"
-                                        onClick={(event) => {
-                                            if (this.dataView && this.state.productInfo) {
-                                                this.dataView.setData(this.state.productInfo.topReviews)
-                                            }
-                                        }} >
-                                    Top Reviews
-                                </Button>
-                            </InputGroupAddon>
-                        </InputGroup>
+                        <Col lg="2" />
+                        <Col lg="8" >
+                            { this.drawLabelSection() }
+                        </Col>
+                        <Col lg="2" />
                     </Row>
                 )
                 theViews.push(
                     <Row>
-                        <ProductReview 
-                            reviews={this.state.productInfo.topReviews}
-                            dataSource={this} />
+                        <Col lg="2"/>
+                        <Col lg="8">
+                            <hr/>
+                            <InputGroup className="searchbar">
+                                <Input id={this.searchBoxId}
+                                    placeholder="search review"
+                                    onKeyPress={(event) => {
+                                        if (event.key === 'Enter') {
+                                            this.searchReview(event);
+                                        }
+                                    }} />
+                                <InputGroupAddon addonType="append">
+                                    <Button color="primary"
+                                            onClick={this.searchReview} >
+                                        Search Review
+                                    </Button>
+                                    <Button color="info"
+                                            onClick={(event) => {
+                                                if (this.dataView && this.state.productInfo) {
+                                                    this.dataView.setData(this.state.productInfo.topReviews)
+                                                }
+                                            }} >
+                                        Top Reviews
+                                    </Button>
+                                </InputGroupAddon>
+                            </InputGroup>
+                        </Col>
+                        <Col lg="2"/>
+                    </Row>
+                )
+                theViews.push(
+                    <Row>
+                        <Col lg="1" />
+                        <Col lg="10">
+                            <ProductReview 
+                                reviews={this.state.productInfo.topReviews}
+                                dataSource={this} />
+                        </Col>
+                        <Col lg="1" />
                     </Row>
                 )
                 return theViews
@@ -143,14 +159,20 @@ export default class ProductView extends Component {
         }
 
         return (
-            <Container>
-                <Row>
-                    <Jumbotron>
-                        <h1>{this.theProduct.name}</h1>
-                    </Jumbotron>
-                </Row>
-                {condDraw()}
-            </Container>
+            <div>
+                <Button color="secondary"
+                    onClick={this.backToProductSearch}>
+                    Back to Product Search
+                </Button>
+                <Jumbotron fluid className="Jumbo">
+                    <Container>
+                        <h1 className="Jumbo">{this.theProduct.name}</h1>
+                    </Container>
+                </Jumbotron>
+                <Container>
+                    {condDraw()}
+                </Container>
+            </div>
         )
     }
 }

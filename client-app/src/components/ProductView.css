@@ -1,0 +1,21 @@
+div.Jumbo {
+    margin: 0px;
+}
+
+h1.Jumbo {
+    text-align: center;
+}
+
+div.labelDeck {
+    margin-top: 12px;
+    margin-bottom: 12px
+}
+
+span.label {
+    margin: 3px
+}
+
+div.searchbar {
+    margin-top: 12px;
+    margin-bottom: 12px
+}

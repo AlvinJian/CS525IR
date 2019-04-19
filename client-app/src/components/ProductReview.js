@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Card, CardImg, CardTitle, CardText, CardDeck,
     CardSubtitle, CardBody } from 'reactstrap';
+import './ProductReview.css'
 
 export default class ProductReview extends Component {
     constructor(props) {
@@ -33,7 +34,7 @@ export default class ProductReview extends Component {
                 for (let i=0; i<5 && 
                         progress.count<progress.theReviews.length; ++i) {
                     cards.push(
-                        <Card>
+                        <Card className="review">
                             <CardBody>
                                 <CardText>
                                     {progress.theReviews[progress.count].text}

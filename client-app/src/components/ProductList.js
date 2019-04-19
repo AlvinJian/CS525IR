@@ -37,18 +37,26 @@ export default class ProductList extends Component {
 
     renderList() {
         if (this.state.products == null) {
-            console.log("nothing")
+            let style = {
+                color: "grey"
+            }
+            return (
+                <ListGroupItem id={0} style={style}>
+                    <i>Nothing yet..</i>
+                </ListGroupItem>
+            )
         } else {
-            console.log(JSON.stringify(this.state.products));
+            // console.log(JSON.stringify(this.state.products));
             return this.state.products.map(
                 (product, i) => {
-                    return (<ListGroupItem
-                                id={product.id}
-                                key={i}
-                                tag="button"
-                                onClick={this.onProductSelected}>
-                                {product.name}
-                            </ListGroupItem>);
+                    return (
+                        <ListGroupItem
+                            id={product.id}
+                            key={i}
+                            tag="button"
+                            onClick={this.onProductSelected}>
+                            {product.name}
+                        </ListGroupItem>);
                 }
             );
         }

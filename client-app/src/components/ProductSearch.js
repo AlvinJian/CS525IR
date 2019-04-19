@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
+import { Jumbotron } from 'reactstrap';
 import { Container, Row, Col } from 'reactstrap';
 import { Button } from 'reactstrap'
 import { Input, InputGroup, InputGroupAddon  } from 'reactstrap';
 import ProductList from  './ProductList.js'
+import './ProductSearch.css'
 
 export default class ProductSearch extends Component {
     constructor(props) {
@@ -33,28 +35,43 @@ export default class ProductSearch extends Component {
 
     render() {
         return(
-            <Container>
-                <Row>
-                    <InputGroup>
-                        <Input id={this.searchBoxId} 
-                            placeholder="product keyword"
-                            onKeyPress={(event) => {
-                                if (event.key === 'Enter') {
-                                    this.searchProduct(event);
-                                }
-                            }} />
-                        <InputGroupAddon addonType="append">
-                            <Button color="primary"
-                                    onClick={this.searchProduct} >
-                                Search Product
-                            </Button>
-                        </InputGroupAddon>
-                    </InputGroup>
-                </Row>
-                <Row>
-                    <ProductList dataSource={this} mgr={this.pageManager}/>
-                </Row>
-            </Container>
+            <div>
+                <Jumbotron fluid className="Jumbo">
+                    <Container fluid>
+                        <h1 className="Jumbo"> Amazon Product Review Search </h1>
+                    </Container>
+                </Jumbotron>
+                <Container>
+                    <Row>
+                        <Col lg="3"/>
+                        <Col lg="6">
+                            <InputGroup className="searchbar">
+                                <Input id={this.searchBoxId} 
+                                    placeholder="product keyword"
+                                    onKeyPress={(event) => {
+                                        if (event.key === 'Enter') {
+                                            this.searchProduct(event);
+                                        }
+                                    }} />
+                                <InputGroupAddon addonType="append">
+                                    <Button color="primary"
+                                            onClick={this.searchProduct} >
+                                        Search Product
+                                    </Button>
+                                </InputGroupAddon>
+                            </InputGroup>
+                        </Col>
+                        <Col lg="3"/>
+                    </Row>
+                    <Row>
+                        <Col lg="3"/>
+                        <Col lg="6">
+                            <ProductList dataSource={this} mgr={this.pageManager}/>
+                        </Col>
+                        <Col lg="3"/>
+                    </Row>
+                </Container>
+            </div>
         );
     }
 }
