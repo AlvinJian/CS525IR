@@ -62,7 +62,7 @@ export default class ProductView extends Component {
                     <CardHeader>Pro</CardHeader>
                     <CardBody>
                         <CardText>
-                            { this.drawLabels(this.state.productInfo.labels, "success") }
+                            { this.drawLabels(this.state.productInfo.goodLabels, "success") }
                         </CardText>
                     </CardBody>
                 </Card>
@@ -71,7 +71,7 @@ export default class ProductView extends Component {
                     <CardBody>
                         <CardText>
                             <div className="label">
-                                { this.drawLabels(this.state.productInfo.labels, "danger") }
+                                { this.drawLabels(this.state.productInfo.badLabels, "danger") }
                             </div>
                         </CardText>
                     </CardBody>

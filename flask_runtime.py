@@ -23,9 +23,11 @@ class MyApp:
     def get_product_info(self, id):
         info = dict()
         reviews = [{'id': i, 'text': '{0} is good. [{1}]'.format(id, i)}  for i in range(5)]
-        labels = ['foo' for _ in range(10)]
+        good_labels = ['good' for _ in range(10)]
+        bad_labels = ['bad' for _ in range(10)]
         info['topReviews'] = reviews
-        info['labels'] = labels
+        info['goodLabels'] = good_labels
+        info['badLabels'] = bad_labels
         return info
 
     def searchReview(self, id, term):
