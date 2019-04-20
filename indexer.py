@@ -184,7 +184,7 @@ def default_reviews(productID,df_amazon):
     tempdf = df_amazon.loc[df_amazon['id'] == productID]
     tempdf = tempdf[['reviews.rating', 'reviews.text','dateAdded']]
     tempdf = tempdf.sort_values(by=['dateAdded'])
-    return tempdf[['reviews.rating', 'reviews.text']].head(10)
+    return tempdf['reviews.text'].head(10).tolist()
 
 
 
@@ -206,7 +206,7 @@ def main(args):
     product_result = index.search_product(query)
     print("product_result",product_result)
     query_review = 'good product'
-    
+
     test_product_id = 'AVqVGWLKnnc1JgDc3jF1'
     review_result = index.search_review(test_product_id,query_review)
     print("review result",review_result)
