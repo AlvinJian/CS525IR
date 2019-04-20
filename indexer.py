@@ -7,7 +7,8 @@ import pandas as pd
 import collections
 import nltk
 nltk.download('stopwords')
-from nltk.corpus import stopwords 
+from nltk.corpus import stopwords
+import operator
 
 class Index(object):
     def __init__(self):
@@ -15,7 +16,7 @@ class Index(object):
         # _documents contains file names of documents
         self._documents_product = {}
         self._positional_index = collections.defaultdict(dict)
-        self._review_document = []
+        self._review_document = {}
         self.stop_words = set(stopwords.words('english')) 
 
     def index_product(self, df_amazon):
@@ -58,12 +59,14 @@ class Index(object):
 
     def index_review(self, df_amazon):
         # ids = set(df_amazon['id'])
-        self._review_document = df_amazon.index
-        for review_id in self._review_document:
+
+        for review_id in df_amazon.index:
+
             tmpdf = df_amazon.loc[review_id]
             productID = tmpdf['id']
             df_review = tmpdf[['reviews.rating', 'reviews.text']]
             review = df_review['reviews.text']
+            self._review_document[review_id] = review
             tokens = self.tokenize(review)
             filtered_reviews = [w for w in tokens if not w in self.stop_words]
             for word_pos,word in enumerate(filtered_reviews):
@@ -117,8 +120,25 @@ class Index(object):
                 match[query] = []
             else:
                 match[query] = matched_index[query]
-        print(match)
-        return pd.Series(get_enough_result(match,query_terms,[])).drop_duplicates(keep='first').values
+
+        result = pd.Series(get_enough_result(match,query_terms,[])).drop_duplicates(keep='first').values
+
+        return [self._review_document[x] for x in result]
+
+
+    def top_frequency_words(self, productID):
+        contains = self._positional_index[productID]
+        frequency = {}
+        for word in contains:
+            frequency[word] = len(contains[word])
+        sort = sorted(frequency.items(), key=operator.itemgetter(1))[-10:]
+        top10_word = []
+        for i in sort:
+            top10_word.append(i[0])
+        return top10_word
+
+
+
 
 def get_enough_result(match,query_terms,result, num=10):
 
@@ -158,7 +178,6 @@ def increasing(permutation):
             continue;
         else:
             return False
-
     return True
 
 def default_reviews(productID,df_amazon):
@@ -187,12 +206,13 @@ def main(args):
     product_result = index.search_product(query)
     print("product_result",product_result)
     query_review = 'good product'
-    print(list(product_result)[0])
+    
     test_product_id = 'AVqVGWLKnnc1JgDc3jF1'
     review_result = index.search_review(test_product_id,query_review)
     print("review result",review_result)
-    for id in review_result:
-        print(df_amazon['reviews.text'][id])
+
+    top_10_review = index.top_frequency_words(test_product_id)
+    print(top_10_review)
 
 if __name__ == "__main__":
     import sys
