@@ -13,8 +13,9 @@ class Index(object):
     def __init__(self):
         self._inverted_index_product = {}
         # _documents contains file names of documents
-        self._documents_product = []
+        self._documents_product = {}
         self._positional_index = collections.defaultdict(dict)
+        self._review_document = []
         self.stop_words = set(stopwords.words('english')) 
 
     def index_product(self, df_amazon):
@@ -28,6 +29,7 @@ class Index(object):
         for i, row in df_name.iterrows():
             content = row['name']
             ids = row['id']
+            self._documents_product[ids] = content
             index_token = index.tokenize(content)
             for term in index_token:
                 if term not in self._inverted_index_product:
@@ -54,19 +56,30 @@ class Index(object):
         tokens = re.findall(regex, lower_text)
         return tokens
 
-    def index_review(self, df_amazon,productID):
-        ids = set(df_amazon['id'])
-        for productID in ids:
-            tempdf = df_amazon.loc[df_amazon['id'] == productID]
-            df_review = tempdf[['reviews.rating', 'reviews.text']]
-            doc_list = df_review.ix[:, 'reviews.text'].tolist()
-            for doc_id,doc in enumerate(doc_list):
-                tokens = self.tokenize(doc)
-                filtered_reviews = [w for w in tokens if not w in self.stop_words]
-                for word_pos,word in enumerate(filtered_reviews):
-                    # if(productID not in self._positional_index.keys()):
-                    #     self._positional_index[productID] = dict()
-                    self._positional_index.setdefault(productID,dict()).setdefault(word,dict()).setdefault(doc_id,set()).add(word_pos)
+    def index_review(self, df_amazon):
+        # ids = set(df_amazon['id'])
+        self._review_document = df_amazon.index
+        for review_id in self._review_document:
+            tmpdf = df_amazon.loc[review_id]
+            productID = tmpdf['id']
+            df_review = tmpdf[['reviews.rating', 'reviews.text']]
+            review = df_review['reviews.text']
+            tokens = self.tokenize(review)
+            filtered_reviews = [w for w in tokens if not w in self.stop_words]
+            for word_pos,word in enumerate(filtered_reviews):
+                self._positional_index.setdefault(productID, dict()).setdefault(word, dict()).setdefault(review_id,set()).add(word_pos)
+
+        # for productID in ids:
+        #     tempdf = df_amazon.loc[df_amazon['id'] == productID]
+        #     df_review = tempdf[['reviews.rating', 'reviews.text']]
+        #     doc_list = df_review.ix[:, 'reviews.text'].tolist()
+        #     for doc_id,doc in enumerate(doc_list):
+        #         tokens = self.tokenize(doc)
+        #         filtered_reviews = [w for w in tokens if not w in self.stop_words]
+        #         for word_pos,word in enumerate(filtered_reviews):
+        #             # if(productID not in self._positional_index.keys()):
+        #             #     self._positional_index[productID] = dict()
+        #             self._positional_index.setdefault(productID,dict()).setdefault(word,dict()).setdefault(doc_id,set()).add(word_pos)
 
 
 
@@ -76,7 +89,7 @@ class Index(object):
     def search_product(self, text):
         query_terms = self.tokenize(text)
 
-        result = {}
+        result = set()
         for query in query_terms:
             if query not in self._inverted_index_product:
                 return []
@@ -86,9 +99,11 @@ class Index(object):
                 else:
                     result &= set(self._inverted_index_product[query])
 
-        # print(result)
-        # print(self._documents_product)
-        return result
+        ids_name = []
+        for id in result:
+            ids_name.append({'id':id,'name':self._documents_product[id]})
+
+        return ids_name
 
     def search_review(self,id,query_text):
         query_terms = self.tokenize(query_text)
@@ -133,7 +148,7 @@ def get_enough_result(match,query_terms,result, num=10):
         key_two = tuple(query_terms[:-1])
         first = {k:match[k] for k in key_one if k in match}
         second = {k: match[k] for k in key_two if k in match}
-        return result+get_enough_result(first,query_terms[1:],result,num)+get_enough_result(second,query_terms[:-1],result,num)
+        return result+list(set(get_enough_result(first,query_terms[1:],result,num)).intersection(set(get_enough_result(second,query_terms[:-1],result,num))))
     else:
         return result
 
@@ -146,15 +161,13 @@ def increasing(permutation):
 
     return True
 
+def default_reviews(productID,df_amazon):
+    tempdf = df_amazon.loc[df_amazon['id'] == productID]
+    tempdf = tempdf[['reviews.rating', 'reviews.text','dateAdded']]
+    tempdf = tempdf.sort_values(by=['dateAdded'])
+    return tempdf[['reviews.rating', 'reviews.text']].head(10)
 
 
-
-
-
-
-
-
-    
 
 
 
@@ -162,21 +175,24 @@ def main(args):
     index = Index()
     print("Indexing.........")
     df_amazon = pd.read_csv('Datafiniti_Amazon_Consumer_Reviews_of_Amazon_Products.csv', error_bad_lines=False,encoding='utf-8-sig')
+
     num_files = index.index_product(df_amazon)
     print("indexed %d files" % num_files)
     #use the search method here will return the product id
     #this method will index the review base on the product id you provided. 
-    result = index.index_review(df_amazon,'AVqVGZNvQMlgsOJE6eUY')
+    result = index.index_review(df_amazon)
     # print(result)
     #search for product
     query = 'fire'
     product_result = index.search_product(query)
-
+    print("product_result",product_result)
     query_review = 'good product'
     print(list(product_result)[0])
     test_product_id = 'AVqVGWLKnnc1JgDc3jF1'
-    review_result = index.search_review('AVqVGWLKnnc1JgDc3jF1',query_review)
+    review_result = index.search_review(test_product_id,query_review)
     print("review result",review_result)
+    for id in review_result:
+        print(df_amazon['reviews.text'][id])
 
 if __name__ == "__main__":
     import sys
