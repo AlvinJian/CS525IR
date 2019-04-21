@@ -39,15 +39,3 @@ div.userInput {
     margin-top: 12px;
     margin-bottom: 12px
 }
-
-button.predictButton {
-    margin-top: 12px;
-    margin-bottom: 12px;
-    width: 100%
-}
-
-span.predictRating {
-    text-align: center;
-    display: inline;
-    font-size: 16px
-}

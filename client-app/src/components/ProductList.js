@@ -36,13 +36,16 @@ export default class ProductList extends Component {
     }
 
     renderList() {
-        if (this.state.products == null) {
+        if (this.state.products == null || this.state.products.length < 1) {
             let style = {
                 color: "grey"
             }
+            let msg = ""
+            if (this.state.products == null) msg = "EMPTY..."
+            else msg = "Nothing found!"
             return (
                 <ListGroupItem id={0} style={style}>
-                    <i>Nothing yet..</i>
+                    <i>{msg}</i>
                 </ListGroupItem>
             )
         } else {

@@ -7,7 +7,9 @@ import { Container, Row, Col } from 'reactstrap';
 import { Card, CardImg, CardTitle, CardText, CardDeck,
     CardHeader, CardBody } from 'reactstrap';
 import ProductReview from './ProductReview'
+import predictButton from './PredictButton'
 import './ProductView.css'
+import DrawPredictButton from './PredictButton';
 
 export default class ProductView extends Component {
     constructor(props) {
@@ -75,18 +77,16 @@ export default class ProductView extends Component {
         )
     }
 
-    getPredictScore() {
+    async getPredictScore() {
         let text = document.getElementById("userReview").value
-        console.log(text)
+        text = text.trim()
+        if (text.length < 1) return -1
         const partUrl = `api/predictScore/${this.theProduct.id}`
         const theBody = `{"text": "${text}"}`
         const request = new Request(partUrl, {method: 'POST', body: theBody})
-        fetch(request).then(resp => resp.json())
-            .then(data => {
-                // console.log(data)
-                const msg = `Predicted Rating: ${data.score}`
-                alert(msg)
-            })
+        const data = await fetch(request).then(resp => resp.json())
+        // console.log(data)
+        return data.score
     }
 
     drawReviewInput() {
@@ -98,11 +98,12 @@ export default class ProductView extends Component {
                     <Row>
                         <Col lg="2" />
                         <Col lg="8">
-                            <Button className="predictButton" 
+                            {/* <Button className="predictButton" 
                                 color="primary"
                                 onClick={this.getPredictScore}>
                                 Predict Rating
-                            </Button>    
+                            </Button> */}
+                            <DrawPredictButton calcScore={this.getPredictScore} />
                         </Col>
                         <Col lg="2" />
                     </Row>
