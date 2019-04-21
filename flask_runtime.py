@@ -1,7 +1,12 @@
 from flask import Flask, send_from_directory, render_template, json
 from flask import current_app, g
+from flask import request
 import pandas as pd
 from indexer import Index, default_reviews
+import pickle
+from sklearn.model_selection import cross_val_score
+from scipy.sparse import hstack
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 class MyApp:
     def __init__(self, name=''):
@@ -14,6 +19,18 @@ class MyApp:
         num_files = self.index.index_product(self.df_amazon)
         print("indexed %d files" % num_files)
         self.index.index_review(self.df_amazon)
+
+        # init predict
+        filename1 = "xgboost.pkl"
+        filename2 = "randomForest.pkl"
+        filename3 = "word_vectorize.pkl"
+        filename4 = "char_vectorize.pkl"
+        with open(filename1, "rb") as f1:
+            self.xgboostModel = pickle.load(f1)
+        with open(filename3, "rb") as f2:
+            self.word_vectorizer = pickle.load(f2)
+        with open(filename4, "rb") as f3:
+            self.char_vectorizer = pickle.load(f3)
 
     def say_name(self):
         print('my name is {0}'.format(self._name))
@@ -38,15 +55,25 @@ class MyApp:
         # print(info['topReviews'])
         return info
 
-    def searchReview(self, id, term):
+    def search_review(self, id, term):
         # dummy = '{0} of {1} is good'.format(term, id)
         # reviews = []
         # for i in range(10):
         #     reviews.append({'id': i, 'text': '{0}-[{1}]'.format(dummy, i)})
         review_text = self.index.search_review(id, term)
+        print('# of reviews={0}'.format(len(review_text)))
         reviews = [{'text': txt} for txt in review_text]
-        # print('[ALVIN] len={0}'.format(len(review_text)))
         return reviews
+
+    def predict_score(self, id, text):
+        test1 = text
+        test1 = [test1]
+        test1_word = self.word_vectorizer.transform(test1)
+        test1_char = self.char_vectorizer.transform(test1)
+        test1_features = hstack([test1_char, test1_word])
+        test1_features = test1_features.tocsr()
+        result = self.xgboostModel.predict(test1_features)
+        return {'score': float(result)}
 
 runtime = Flask(__name__, static_folder='client-app/build/static', template_folder='client-app/build')
 
@@ -73,4 +100,11 @@ def get_product_info(product_id):
 @runtime.route('/api/searchReview/<id>/<term>')
 def search_review(id, term):
     myApp = get_app_instance()
-    return json.jsonify(myApp.searchReview(id, term))
+    return json.jsonify(myApp.search_review(id, term))
+
+@runtime.route('/api/predictScore/<id>', methods=['POST'])
+def predict_score(id):
+    s = request.data.decode("utf-8")
+    text = json.loads(s)['text']
+    myApp = get_app_instance()
+    return json.jsonify(myApp.predict_score(id, text))

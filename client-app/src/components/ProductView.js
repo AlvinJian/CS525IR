@@ -78,6 +78,15 @@ export default class ProductView extends Component {
     getPredictScore() {
         let text = document.getElementById("userReview").value
         console.log(text)
+        const partUrl = `api/predictScore/${this.theProduct.id}`
+        const theBody = `{"text": "${text}"}`
+        const request = new Request(partUrl, {method: 'POST', body: theBody})
+        fetch(request).then(resp => resp.json())
+            .then(data => {
+                // console.log(data)
+                const msg = `Predicted Rating: ${data.score}`
+                alert(msg)
+            })
     }
 
     drawReviewInput() {
