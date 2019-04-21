@@ -1,3 +1,9 @@
+button.backToSearch {
+    position: fixed;
+    top: 14px;
+    left: 14px
+}
+
 div.Jumbo {
     margin: 0px;
 }
@@ -12,10 +18,36 @@ div.labelDeck {
 }
 
 span.label {
-    margin: 3px
+    margin: 5px;
+    font-size: 14px
 }
 
 div.searchbar {
     margin-top: 12px;
     margin-bottom: 12px
+}
+
+div.userComment {
+    font-size: 24px
+}
+
+textarea.inputReview {
+    width: 100%;
+}
+
+div.userInput {
+    margin-top: 12px;
+    margin-bottom: 12px
+}
+
+button.predictButton {
+    margin-top: 12px;
+    margin-bottom: 12px;
+    width: 100%
+}
+
+span.predictRating {
+    text-align: center;
+    display: inline;
+    font-size: 16px
 }

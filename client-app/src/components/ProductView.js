@@ -23,8 +23,11 @@ export default class ProductView extends Component {
         this.setDataView = this.setDataView.bind(this)
         this.drawLabels = this.drawLabels.bind(this)
         this.drawLabelSection = this.drawLabelSection.bind(this)
+        this.drawReviewInput = this.drawReviewInput.bind(this)
+        this.drawReviewSearchBar = this.drawReviewSearchBar.bind(this)
         this.backToProductSearch = this.backToProductSearch.bind(this)
         this.searchReview = this.searchReview.bind(this)
+        this.getPredictScore = this.getPredictScore.bind(this)
 
         let cmd = `api/getProductInfo/${this.theProduct.id}`
         fetch(cmd).then(resp => resp.json())
@@ -59,24 +62,71 @@ export default class ProductView extends Component {
         return (
             <CardDeck className="labelDeck">
                 <Card>
-                    <CardHeader>Pro</CardHeader>
-                    <CardBody>
-                        <CardText>
-                            { this.drawLabels(this.state.productInfo.goodLabels, "success") }
-                        </CardText>
-                    </CardBody>
-                </Card>
-                <Card>
-                    <CardHeader>Con</CardHeader>
+                    <CardHeader>Popular Words</CardHeader>
                     <CardBody>
                         <CardText>
                             <div className="label">
-                                { this.drawLabels(this.state.productInfo.badLabels, "danger") }
+                                { this.drawLabels(this.state.productInfo.labels, "success") }
                             </div>
                         </CardText>
                     </CardBody>
                 </Card>
             </CardDeck>
+        )
+    }
+
+    getPredictScore() {
+        let text = document.getElementById("userReview").value
+        console.log(text)
+    }
+
+    drawReviewInput() {
+        return(
+            <div className="userInput">
+                <div className="userComment">Your Comments:</div>
+                <textarea id="userReview" className="inputReview"/>
+                <Container>
+                    <Row>
+                        <Col lg="2" />
+                        <Col lg="8">
+                            <Button className="predictButton" 
+                                color="primary"
+                                onClick={this.getPredictScore}>
+                                Predict Rating
+                            </Button>    
+                        </Col>
+                        <Col lg="2" />
+                    </Row>
+                </Container>
+            </div>
+        )
+    }
+
+    drawReviewSearchBar() {
+        return(
+            <InputGroup className="searchbar">
+                <Input id={this.searchBoxId}
+                    placeholder="search review"
+                    onKeyPress={(event) => {
+                        if (event.key === 'Enter') {
+                            this.searchReview(event);
+                        }
+                    }} />
+                <InputGroupAddon addonType="append">
+                    <Button color="primary"
+                            onClick={this.searchReview} >
+                        Search Review
+                    </Button>
+                    <Button color="info"
+                            onClick={(event) => {
+                                if (this.dataView && this.state.productInfo) {
+                                    this.dataView.setData(this.state.productInfo.topReviews)
+                                }
+                            }} >
+                        Top Reviews
+                    </Button>
+                </InputGroupAddon>
+            </InputGroup>
         )
     }
 
@@ -104,39 +154,28 @@ export default class ProductView extends Component {
                     <Row>
                         <Col lg="2" />
                         <Col lg="8" >
-                            { this.drawLabelSection() }
+                            { this.drawReviewInput() }
                         </Col>
                         <Col lg="2" />
                     </Row>
                 )
                 theViews.push(
+                    <div>
+                        <hr/>
+                        <Row>
+                            <Col lg="2" />
+                            <Col lg="8" >
+                                { this.drawLabelSection() }
+                            </Col>
+                            <Col lg="2" />
+                        </Row>
+                    </div>
+                )
+                theViews.push(
                     <Row>
                         <Col lg="2"/>
                         <Col lg="8">
-                            <hr/>
-                            <InputGroup className="searchbar">
-                                <Input id={this.searchBoxId}
-                                    placeholder="search review"
-                                    onKeyPress={(event) => {
-                                        if (event.key === 'Enter') {
-                                            this.searchReview(event);
-                                        }
-                                    }} />
-                                <InputGroupAddon addonType="append">
-                                    <Button color="primary"
-                                            onClick={this.searchReview} >
-                                        Search Review
-                                    </Button>
-                                    <Button color="info"
-                                            onClick={(event) => {
-                                                if (this.dataView && this.state.productInfo) {
-                                                    this.dataView.setData(this.state.productInfo.topReviews)
-                                                }
-                                            }} >
-                                        Top Reviews
-                                    </Button>
-                                </InputGroupAddon>
-                            </InputGroup>
+                            {this.drawReviewSearchBar()}
                         </Col>
                         <Col lg="2"/>
                     </Row>
@@ -161,6 +200,7 @@ export default class ProductView extends Component {
         return (
             <div>
                 <Button color="secondary"
+                    className="backToSearch"
                     onClick={this.backToProductSearch}>
                     Back to Product Search
                 </Button>

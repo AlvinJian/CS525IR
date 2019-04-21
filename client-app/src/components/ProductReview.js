@@ -31,7 +31,7 @@ export default class ProductReview extends Component {
         let drawDeck = () => {
             let drawCards = () => {
                 let cards = []
-                for (let i=0; i<5 && 
+                for (let i=0; i<2 && 
                         progress.count<progress.theReviews.length; ++i) {
                     cards.push(
                         <Card className="review">
