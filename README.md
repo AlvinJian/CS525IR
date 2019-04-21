@@ -1,13 +1,12 @@
-# Run it at first time
+# Initial setup for front end
 ```
 cd client-app/
 npm install
 npm run build
 ```
-the above commands are for react. If the front-end code is changed, you have to re-run `npm run build` in `client-app/`
-# Run!
-make sure `flask` is installed, then do:
+If the front-end code is changed, you have to re-run `npm run build` in `client-app/`
 
+# Run!
 on Windows:
 ```
 ./run.ps1
