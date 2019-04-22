@@ -113,11 +113,11 @@ class Index(object):
         matched_index = self._positional_index[id]
 
         match = dict()
-        print("matched index", matched_index)
+        # print("matched index", matched_index)
 
         for query in query_terms:
             if query not in matched_index.keys():
-                match[query] = []
+                match[query] = dict()
             else:
                 match[query] = matched_index[query]
 
@@ -132,6 +132,7 @@ class Index(object):
         for word in contains:
             frequency[word] = len(contains[word])
         sort = sorted(frequency.items(), key=operator.itemgetter(1))[-10:]
+        # print(sort)
         top10_word = []
         for i in sort:
             top10_word.append(i[0])
@@ -142,22 +143,27 @@ class Index(object):
 
 def get_enough_result(match,query_terms,result, num=10):
 
-    doc_id = match[next(iter(match))].keys()
-    print(doc_id)
-    for key in match:
-        doc_id &=  match[key].keys()
-    print("doc id",doc_id)
+    # doc_id = match[next(iter(match))].keys()
+    # print(doc_id)
+    # for key in match:
+    #     doc_id &=  match[key].keys()
+    if(len(query_terms)==0):
+        return []
+    doc_id = match[query_terms[0]].keys()
+    for key in query_terms[1:]:
+        doc_id &= match[key].keys()
+    # print("doc id",doc_id)
     position = dict()
     if(len(doc_id)>0):
         for id in doc_id:
             for key in query_terms:
                 position.setdefault(id,[]).append(list(match[key][id]))
-    print("positions",position)
+    # print("positions ",position)
 
     for id in position:
 
         position[id] =[ x for x in product(*position[id])]
-    print("positions",position)
+    # print("positions",position)
     for id in position:
         for permutation in position[id]:
             if(increasing(permutation)):
@@ -205,11 +211,11 @@ def main(args):
     query = 'fire'
     product_result = index.search_product(query)
     print("product_result",product_result)
-    query_review = 'good product'
+    query_review = 'zzzz'
 
     test_product_id = 'AVqVGWLKnnc1JgDc3jF1'
     review_result = index.search_review(test_product_id,query_review)
-    print("review result",review_result)
+    print("review result",len(review_result),review_result)
 
     top_10_review = index.top_frequency_words(test_product_id)
     print(top_10_review)
