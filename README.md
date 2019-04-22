@@ -7,6 +7,7 @@ Product Review Page:
 ![Product Review](screenshots/product_info.png)
 
 # Initial setup for front end
+npm is required for building ReactJS App, so install node.js first then
 ```
 cd client-app/
 npm install
